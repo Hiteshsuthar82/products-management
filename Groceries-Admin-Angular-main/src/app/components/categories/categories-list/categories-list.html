@@ -1,0 +1,495 @@
+<div class="p-6">
+<!-- Header -->
+<div class="mb-8">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Categories</h1>
+      <p class="mt-2 text-lg text-gray-600">Manage product categories and subcategories</p>
+    </div>
+
+    <!-- Action Buttons (right-aligned) -->
+    <div class="flex items-center space-x-3">
+      <!-- Export to Excel -->
+      <button
+        (click)="exportToExcel()"
+        [disabled]="isExporting || isLoading"
+        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <svg *ngIf="!isExporting" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <svg *ngIf="isExporting" class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        {{ isExporting ? 'Exporting...' : 'Export to Excel' }}
+      </button>
+
+      <!-- Import from Excel -->
+      <button
+        (click)="openImportModal()"
+        [disabled]="isLoading"
+        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+        </svg>
+        Import from Excel
+      </button>
+
+      <!-- Add Category -->
+      <button
+        (click)="openAddCategoryModal()"
+        class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Add Category
+      </button>
+    </div>
+  </div>
+</div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Total Categories</dt>
+                <dd class="text-lg font-medium text-gray-900">{{ stats?.total || 0 }}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Active Categories</dt>
+                <dd class="text-lg font-medium text-gray-900">{{ stats?.active || 0 }}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Parent Categories</dt>
+                <dd class="text-lg font-medium text-gray-900">{{ stats?.parentCategories || 0 }}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Subcategories</dt>
+                <dd class="text-lg font-medium text-gray-900">{{ stats?.subcategories || 0 }}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Search -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+          <input
+            type="text"
+            placeholder="Search categories..."
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            (input)="onSearch($any($event.target).value)"
+          />
+        </div>
+
+        <!-- Type Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+          <select
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            (change)="filters.type = $any($event.target).value === '' ? undefined : $any($event.target).value; onFilterChange()"
+          >
+            <option value="">All Types</option>
+            <option value="parent">Parent Categories</option>
+            <option value="subcategory">Subcategories</option>
+          </select>
+        </div>
+
+        <!-- Status Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <select
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            (change)="filters.isActive = $any($event.target).value === '' ? undefined : $any($event.target).value === 'true'; onFilterChange()"
+          >
+            <option value="">All Status</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories List -->
+    <div class="bg-white shadow-xl border border-gray-200 rounded-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-medium text-gray-900">All Categories</h2>
+          <div class="text-sm text-gray-500">
+            {{ totalItems }} categories
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="p-8 text-center">
+        <div class="inline-flex items-center">
+          <svg class="animate-spin h-5 w-5 text-primary-600 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Loading categories...
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="errorMessage" class="p-6">
+        <div class="rounded-md bg-red-50 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">{{ errorMessage }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories Table -->
+      <div *ngIf="!isLoading && !errorMessage" class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Products</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let category of displayedCategories" class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10">
+                    <div class="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                      <img *ngIf="category.icon" [src]="category.icon" [alt]="category.name" class="w-full h-full object-cover">
+                      <svg *ngIf="!category.icon" class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">{{ category.name }}</div>
+                    <div class="text-sm text-gray-500">{{ category.slug }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      [class]="category.parentId?._id ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'">
+                  {{ category.parentId?._id ? 'Subcategory' : 'Parent' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {{ category.productCount }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span 
+                  (click)="toggleCategoryStatus(category)"
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity"
+                  [class]="category.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                  [title]="category.isActive ? 'Click to deactivate' : 'Click to activate'"
+                >
+                  {{ category.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ formatDate(category.createdAt) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div class="flex items-center justify-end space-x-2">
+                  <button
+                    (click)="openEditCategoryModal(category)"
+                    class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200"
+                    title="Edit category"
+                  >
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit
+                  </button>
+                  <button
+                    (click)="deleteCategory(category)"
+                    class="inline-flex items-center px-3 py-1.5 border border-red-300 rounded-md text-xs font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
+                    title="Delete category"
+                  >
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Empty State -->
+        <div *ngIf="totalItems === 0" class="text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">
+            {{ categories.length === 0 ? 'No categories' : 'No matching categories' }}
+          </h3>
+          <p class="mt-1 text-sm text-gray-500">
+            {{ categories.length === 0 ? 'Get started by creating a new category.' : 'Try adjusting your search or filters.' }}
+          </p>
+          <div class="mt-6">
+            <button
+              (click)="openAddCategoryModal()"
+              class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Category
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!isLoading && totalItems > 0"
+    class="bg-white px-6 py-4 flex items-center justify-between border-t border-gray-200 mt-6 rounded-lg shadow-sm">
+    <div class="flex items-center space-x-6">
+      <div class="text-sm text-gray-700">
+        Showing <span class="font-semibold">{{ (currentPage - 1) * pageSize + 1 }}</span> to
+        <span class="font-semibold">{{ Math.min(currentPage * pageSize, totalItems) }}</span> of
+        <span class="font-semibold">{{ totalItems }}</span> results
+      </div>
+      <div class="flex items-center space-x-2">
+        <span class="text-sm text-gray-700">Show:</span>
+        <select
+          class="pl-3 pr-7 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          [value]="pageSize" (change)="onPageSizeChange(+$any($event.target).value)">
+          <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <button *ngIf="currentPage > 1"
+        class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        (click)="onPageChange(currentPage - 1)">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Previous
+      </button>
+
+      <div class="flex items-center space-x-1">
+        <button *ngFor="let page of [].constructor(totalPages); let i = index"
+          [class]="(i + 1) === currentPage 
+                ? 'inline-flex items-center px-3 py-2 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600 rounded-md active'
+                : 'inline-flex items-center px-3 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md'"
+          (click)="onPageChange(i + 1)">
+          {{ i + 1 }}
+        </button>
+      </div>
+
+      <button *ngIf="currentPage < totalPages"
+        class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        (click)="onPageChange(currentPage + 1)">
+        Next
+        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Category Modal -->
+  <app-category-modal
+    [isOpen]="isModalOpen"
+    [category]="selectedCategory"
+    [parentCategories]="parentCategories"
+    (close)="closeModal()"
+    (saved)="onCategorySaved($event)"
+  ></app-category-modal>
+
+  <!-- Import Modal -->
+  <div *ngIf="showImportModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center" (click)="closeImportModal()">
+    <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium text-gray-900">Import Categories from Excel</h3>
+        <button (click)="closeImportModal()" class="text-gray-400 hover:text-gray-500">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="space-y-4">
+        <!-- Sample File Download -->
+        <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div class="flex items-start">
+            <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-blue-900">Need a sample file?</p>
+              <p class="text-sm text-blue-700 mt-1">Download the Excel template to see the correct format.</p>
+              <button
+                (click)="downloadSampleFile()"
+                class="mt-2 inline-flex items-center px-3 py-1.5 border border-blue-300 rounded-md text-sm font-medium text-blue-700 bg-white hover:bg-blue-50"
+              >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+                Download Sample File
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- File Upload -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Select Excel File</label>
+          <input
+            type="file"
+            id="fileInput"
+            accept=".xlsx,.xls"
+            (change)="onFileSelected($event)"
+            class="block w-full text-sm text-gray-500
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-lg file:border-0
+              file:text-sm file:font-semibold
+              file:bg-blue-50 file:text-blue-700
+              hover:file:bg-blue-100
+              file:cursor-pointer"
+          />
+          <p class="mt-2 text-xs text-gray-500">
+            Supported formats: .xlsx, .xls. Make sure your file has the correct column headers.
+          </p>
+        </div>
+        
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="p-3 bg-red-50 border border-red-200 rounded-md">
+          <p class="text-sm text-red-600">{{ errorMessage }}</p>
+        </div>
+        
+        <!-- Import Results -->
+        <div *ngIf="importResults" class="p-4 rounded-md" [class.bg-green-50]="importResults.imported > 0" [class.bg-yellow-50]="importResults.imported === 0 && importResults.failed > 0" [class.border-green-200]="importResults.imported > 0" [class.border-yellow-200]="importResults.imported === 0">
+          <p class="text-sm font-medium mb-2" [class.text-green-800]="importResults.imported > 0" [class.text-yellow-800]="importResults.imported === 0">
+            <span *ngIf="importResults.imported > 0">Import completed!</span>
+            <span *ngIf="importResults.imported === 0">No categories imported</span>
+          </p>
+          <div class="space-y-1 text-sm" [class.text-green-700]="importResults.imported > 0" [class.text-yellow-700]="importResults.imported === 0">
+            <p *ngIf="importResults.imported > 0">
+              <span class="font-semibold">{{ importResults.imported }}</span> categories imported successfully
+            </p>
+            <p *ngIf="importResults.imported === 0">
+              All categories already exist or have invalid data
+            </p>
+            <p *ngIf="importResults.failed > 0" class="text-orange-700">
+              <span class="font-semibold">{{ importResults.failed }}</span> category/categories already exist
+            </p>
+          </div>
+          <button
+            (click)="closeImportModal()"
+            class="mt-3 w-full px-4 py-2 text-sm font-medium text-white rounded-lg"
+            [class.bg-green-600]="importResults.imported > 0"
+            [class.hover:bg-green-700]="importResults.imported > 0"
+            [class.bg-yellow-600]="importResults.imported === 0"
+            [class.hover:bg-yellow-700]="importResults.imported === 0"
+          >
+            Done
+          </button>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div *ngIf="!importResults" class="flex items-center justify-end space-x-3 pt-4">
+          <button
+            (click)="closeImportModal()"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            (click)="importFromExcel()"
+            [disabled]="!selectedFile || isImporting"
+            class="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span *ngIf="!isImporting">Import Categories</span>
+            <span *ngIf="isImporting" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Importing...
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

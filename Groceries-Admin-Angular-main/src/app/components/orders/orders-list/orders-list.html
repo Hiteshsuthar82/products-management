@@ -1,0 +1,328 @@
+<div class="p-6 orders-container">
+<!-- Header -->
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">Orders ({{ totalItems }})</h1>
+    <p class="text-gray-600 mt-1">Manage and track customer orders</p>
+  </div>
+
+  <!-- Action Buttons (right-aligned) -->
+  <div class="flex items-center space-x-3">
+    <!-- Export to Excel -->
+    <button
+      (click)="exportToExcel()"
+      [disabled]="isExporting || loading"
+      class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <svg *ngIf="!isExporting" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      <svg *ngIf="isExporting" class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      {{ isExporting ? 'Exporting...' : 'Export to Excel' }}
+    </button>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-3">
+    <!-- Search Bar -->
+    <div class="lg:col-span-1">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input type="text" placeholder="Order number or customer name..."
+          class="input-field pl-9 text-sm"
+          (input)="onSearchChange($any($event.target).value)" />
+      </div>
+    </div>
+
+    <!-- Status Filter -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Order Status</label>
+      <select
+        class="input-field text-sm"
+        [(ngModel)]="filters.status" (change)="onFilterChange()">
+        <option *ngFor="let option of statusOptions" [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Payment Status Filter -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Payment Status</label>
+      <select
+        class="input-field text-sm"
+        [(ngModel)]="filters.paymentStatus" (change)="onFilterChange()">
+        <option *ngFor="let option of paymentStatusOptions" [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Payment Method Filter -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+      <select
+        class="input-field text-sm"
+        [(ngModel)]="filters.paymentMethod" (change)="onFilterChange()">
+        <option *ngFor="let option of paymentMethodOptions" [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Active Filters Display -->
+  <!-- <div *ngIf="hasActiveFilters()" class="mt-4 pt-4 border-t border-gray-200">
+    <div class="flex items-center space-x-2">
+      <span class="text-sm font-medium text-gray-700">Active filters:</span>
+      <div class="flex flex-wrap gap-2">
+        <span *ngIf="filters.status"
+          class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 filter-chip">
+          Status: {{ getStatusLabel(filters.status) }}
+          <button type="button"
+            class="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 remove-button"
+            (click)="clearFilter('status')">
+            <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8">
+              <path d="m0 0 1 1 1-1 1 1 1-1 1 1 1-1 1 1-1 1-1-1-1 1-1-1-1 1-1-1-1 1-1-1-1 1-1-1z" />
+            </svg>
+          </button>
+        </span>
+        <span *ngIf="filters.paymentStatus"
+          class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 filter-chip">
+          Payment: {{ getPaymentStatusLabel(filters.paymentStatus) }}
+          <button type="button"
+            class="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+            (click)="clearFilter('paymentStatus')">
+            <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8">
+              <path d="m0 0 1 1 1-1 1 1 1-1 1 1 1-1 1 1-1 1-1-1-1 1-1-1-1 1-1-1-1 1-1-1-1 1-1-1z" />
+            </svg>
+          </button>
+        </span>
+        <span *ngIf="filters.paymentMethod"
+          class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 filter-chip">
+          Method: {{ getPaymentMethodLabel(filters.paymentMethod) }}
+          <button type="button"
+            class="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            (click)="clearFilter('paymentMethod')">
+            <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8">
+              <path d="m0 0 1 1 1-1 1 1 1-1 1 1 1-1 1 1-1 1-1-1-1 1-1-1-1 1-1-1-1 1-1-1-1 1-1-1z" />
+            </svg>
+          </button>
+        </span>
+        <span *ngIf="filters.search"
+          class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 filter-chip">
+          Search: "{{ filters.search }}"
+          <button type="button"
+            class="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            (click)="clearFilter('search')">
+            <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8">
+              <path d="m0 0 1 1 1-1 1 1 1-1 1 1 1-1 1 1-1 1-1-1-1 1-1-1-1 1-1-1-1 1-1-1-1 1-1-1z" />
+            </svg>
+          </button>
+        </span>
+      </div>
+    </div>
+  </div> -->
+</div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="flex justify-center items-center py-12">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    <span class="ml-2 text-gray-600">Loading orders...</span>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+            clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-red-800">Error</h3>
+        <div class="mt-2 text-sm text-red-700">
+          {{ error }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orders Table -->
+  <div *ngIf="!loading && !error" class="bg-white shadow-sm rounded-lg border border-gray-200">
+    <table class="w-full divide-y divide-gray-200 orders-table">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Order
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Customer
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Items
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Status
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Payment
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Total
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Date
+          </th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let order of orders" class="hover:bg-gray-50 transition-colors duration-150">
+          <td class="px-4 py-3">
+            <div class="text-sm font-semibold text-gray-900">#{{ order.orderNumber }}</div>
+            <div class="text-xs text-gray-500">{{ order._id.slice(-8) }}</div>
+          </td>
+          <td class="px-4 py-3">
+            <div class="text-sm font-medium text-gray-900">{{ order.user.name }}</div>
+            <div class="text-xs text-gray-500">{{ order.user.email }}</div>
+          </td>
+          <td class="px-4 py-3">
+            <div class="text-sm text-gray-900">
+              {{ order.items.length }} item{{ order.items.length !== 1 ? 's' : '' }}
+            </div>
+            <div class="text-xs text-gray-500 truncate max-w-32">
+              {{ order.items[0].name }}{{ order.items.length > 1 ? ' +' + (order.items.length - 1) + ' more' : '' }}
+            </div>
+          </td>
+          <td class="px-4 py-3">
+            <select 
+              (change)="updateOrderStatus(order._id, $event)"
+              class="inline-flex px-2 py-1 pr-6 text-xs font-semibold rounded-full border-0 focus:ring-2 focus:ring-offset-1 cursor-pointer appearance-none {{ getStatusBadgeClass(order.orderStatus) }}"
+              [value]="order.orderStatus"
+            >
+              <option value="pending" class="bg-white text-yellow-800">Pending</option>
+              <option value="confirmed" class="bg-white text-blue-800">Confirmed</option>
+              <option value="processing" class="bg-white text-purple-800">Processing</option>
+              <option value="shipped" class="bg-white text-indigo-800">Shipped</option>
+              <option value="delivered" class="bg-white text-green-800">Delivered</option>
+              <option value="cancelled" class="bg-white text-red-800">Cancelled</option>
+              <option value="returned" class="bg-white text-gray-800">Returned</option>
+            </select>
+          </td>
+          <td class="px-4 py-3">
+            <div>
+              <span
+                class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ getPaymentStatusBadgeClass(order.paymentInfo.status) }}">
+                {{ order.paymentInfo.status | titlecase }}
+              </span>
+              <div class="text-xs text-gray-500 mt-1">
+                {{ order.paymentInfo.method | titlecase }}
+              </div>
+            </div>
+          </td>
+          <td class="px-4 py-3 text-sm font-semibold text-gray-900">
+            {{ formatCurrency(order.pricing.totalPrice, order.pricing.currency) }}
+          </td>
+          <td class="px-4 py-3 text-sm text-gray-500">
+            {{ formatDate(order.createdAt) }}
+          </td>
+          <td class="px-4 py-3 text-right">
+            <button
+              class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 action-button"
+              (click)="viewOrderDetails(order._id)">
+              <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                </path>
+              </svg>
+              View
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="orders.length === 0" class="text-center py-12">
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+    </svg>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">No orders found</h3>
+    <p class="mt-1 text-sm text-gray-500">Get started by creating a new order or adjust your filters.</p>
+  </div>
+</div>
+
+<!-- Pagination section for orders (match categories styling exactly) -->
+<div *ngIf="!loading && totalItems > 0"
+  class="bg-white px-6 py-4 flex items-center justify-between border-t border-gray-200 mt-6 rounded-lg shadow-sm">
+  <div class="flex items-center space-x-6">
+    <div class="text-sm text-gray-700">
+      Showing <span class="font-semibold">{{ (currentPage - 1) * pageSize + 1 }}</span> to
+      <span class="font-semibold">{{ Math.min(currentPage * pageSize, totalItems) }}</span> of
+      <span class="font-semibold">{{ totalItems }}</span> results
+    </div>
+    
+    <!-- Show dropdown with exact categories styling -->
+    <div class="flex items-center space-x-2">
+      <span class="text-sm text-gray-700">Show:</span>
+      <select
+  class="pl-3 pr-7 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+  [(ngModel)]="pageSize"
+  (ngModelChange)="onPageSizeChange($event)">
+  <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+</select>
+    </div>
+  </div>
+
+  <div class="flex items-center space-x-2">
+    <button *ngIf="currentPage > 1"
+      class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      (click)="onPageChange(currentPage - 1)">
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+      Previous
+    </button>
+
+    <div class="flex items-center space-x-1">
+      <button *ngFor="let page of [].constructor(totalPages); let i = index"
+        [class]="(i + 1) === currentPage 
+              ? 'inline-flex items-center px-3 py-2 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600 rounded-md active'
+              : 'inline-flex items-center px-3 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md'"
+        (click)="onPageChange(i + 1)">
+        {{ i + 1 }}
+      </button>
+    </div>
+
+    <button *ngIf="currentPage < totalPages"
+      class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      (click)="onPageChange(currentPage + 1)">
+      Next
+      <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+    </button>
+  </div>
+</div>

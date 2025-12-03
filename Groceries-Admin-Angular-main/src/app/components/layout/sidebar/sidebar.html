@@ -1,0 +1,167 @@
+<div class="flex flex-col h-full bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 shadow-lg sidebar-container"
+     [class.collapsed]="isCollapsed">
+  <!-- Logo -->
+  <div class="relative border-b border-gray-200 bg-white transition-all duration-300"
+       [class.h-20]="!isCollapsed"
+       [class.h-16]="isCollapsed"
+       [class.px-6]="!isCollapsed"
+       [class.px-4]="isCollapsed">
+    
+    <!-- Logo and text - only visible when not collapsed -->
+    <div class="flex items-center justify-between h-full" 
+         [class.hidden]="isCollapsed">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 logo-container">
+          <div class="h-10 w-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-md">
+            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+          </div>
+        </div>
+        <div class="ml-4">
+          <h1 class="text-xl font-bold text-gray-900 tracking-tight whitespace-nowrap">Groceries</h1>
+          <p class="text-sm text-gray-500 font-medium whitespace-nowrap">Admin</p>
+        </div>
+      </div>
+      
+      <!-- Toggle button - only visible when not collapsed -->
+      <button
+        (click)="toggleSidebar()"
+        class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-200 group flex-shrink-0 collapse-btn-expanded"
+        title="Collapse sidebar"
+      >
+        <svg class="h-5 w-5 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Toggle button for collapsed state - centered and prominent -->
+    <div class="flex items-center justify-center h-full" 
+         [class.hidden]="!isCollapsed">
+      <button
+        (click)="toggleSidebar()"
+        class="p-3 rounded-xl text-gray-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 group bg-gray-50 shadow-sm border border-gray-200 collapse-btn-collapsed"
+        title="Expand sidebar"
+      >
+        <svg class="h-6 w-6 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 py-6 space-y-2 overflow-y-auto sidebar-nav transition-all duration-300"
+       [class.px-4]="!isCollapsed"
+       [class.px-2]="isCollapsed">
+    <div *ngFor="let item of menuItems" class="space-y-1">
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md"
+        [routerLinkActiveOptions]="{exact: true}"
+        class="group flex items-center text-sm font-semibold rounded-xl text-gray-700 hover:bg-gradient-to-r hover:from-primary-50 hover:to-primary-100 hover:text-primary-700 transition-all duration-300 relative overflow-hidden sidebar-link"
+        [class.px-4]="!isCollapsed"
+        [class.px-2]="isCollapsed"
+        [class.py-3]="!isCollapsed"
+        [class.py-2]="isCollapsed"
+        [class.justify-center]="isCollapsed"
+      >
+        <!-- Active indicator -->
+        <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary-500 rounded-r-full transform scale-y-0 transition-transform duration-300" 
+             [class.scale-y-100]="isActiveRoute(item.route)"></div>
+        
+        <!-- Icon -->
+        <div class="flex-shrink-0 rounded-lg bg-gray-100 group-hover:bg-primary-100 transition-colors duration-300"
+             [class.mr-4]="!isCollapsed"
+             [class.p-1.5]="!isCollapsed"
+             [class.p-2]="isCollapsed"
+             [class.bg-primary-100]="isActiveRoute(item.route)">
+          <svg class="transition-colors duration-300" 
+               [class.h-5]="!isCollapsed"
+               [class.w-5]="!isCollapsed"
+               [class.h-6]="isCollapsed"
+               [class.w-6]="isCollapsed"
+               [class.text-primary-600]="isActiveRoute(item.route)"
+               fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.icon" />
+          </svg>
+        </div>
+        
+        <!-- Label -->
+        <span class="transition-all duration-300 whitespace-nowrap" 
+              [class.hidden]="isCollapsed" 
+              [class.opacity-0]="isCollapsed"
+              [class.w-0]="isCollapsed"
+              [class.overflow-hidden]="isCollapsed">{{ item.name }}</span>
+        
+        <!-- Tooltip for collapsed state -->
+        <div class="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 pointer-events-none transition-opacity duration-200 z-50 whitespace-nowrap sidebar-tooltip"
+             [class.opacity-100]="isCollapsed && isHovered"
+             (mouseenter)="isHovered = true"
+             (mouseleave)="isHovered = false">
+          {{ item.name }}
+        </div>
+      </a>
+    </div>
+  </nav>
+
+  <!-- User section -->
+  <div class="border-t border-gray-200 bg-white transition-all duration-300"
+       [class.p-4]="!isCollapsed"
+       [class.p-2]="isCollapsed">
+    <div class="flex items-center transition-all duration-300" 
+         [class.justify-center]="isCollapsed"
+         [class.relative]="isCollapsed">
+      <div class="flex-shrink-0">
+        <div class="bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center shadow-md ring-2 ring-white user-avatar transition-all duration-300"
+             [class.h-12]="!isCollapsed"
+             [class.w-12]="!isCollapsed"
+             [class.h-10]="isCollapsed"
+             [class.w-10]="isCollapsed">
+          <svg class="text-white transition-all duration-300" 
+               [class.h-6]="!isCollapsed"
+               [class.w-6]="!isCollapsed"
+               [class.h-5]="isCollapsed"
+               [class.w-5]="isCollapsed"
+               fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </div>
+      </div>
+      <div class="ml-4 flex-1 transition-all duration-300 overflow-hidden" 
+           [class.hidden]="isCollapsed" 
+           [class.opacity-0]="isCollapsed"
+           [class.w-0]="isCollapsed">
+        <p class="text-sm font-semibold text-gray-900 truncate whitespace-nowrap">{{ currentUser?.name || 'Admin User' }}</p>
+        <p class="text-xs text-gray-500 truncate whitespace-nowrap">{{ currentUser?.email || 'admin@globalgroceries.com' }}</p>
+      </div>
+      <div class="flex items-center space-x-2 transition-all duration-300" 
+           [class.hidden]="isCollapsed" 
+           [class.opacity-0]="isCollapsed"
+           [class.w-0]="isCollapsed">
+        <button
+          (click)="logout()"
+          class="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200 group"
+          title="Logout"
+        >
+          <svg class="h-4 w-4 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Logout button for collapsed state -->
+      <button
+        (click)="logout()"
+        class="absolute -bottom-2 -right-2 p-1.5 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200 group bg-white shadow-md"
+        [class.hidden]="!isCollapsed"
+        title="Logout"
+      >
+        <svg class="h-3 w-3 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,132 @@
+<!-- Modal Overlay -->
+<div *ngIf="isOpen" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <!-- Background overlay -->
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" (click)="closeModal()"></div>
+
+    <!-- Modal panel -->
+    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+      <!-- Modal Header -->
+      <div class="bg-white px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-900" id="modal-title">
+            Update Point Value
+          </h3>
+          <button
+            type="button"
+            class="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md p-1"
+            (click)="closeModal()"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="bg-white px-6 py-6">
+        <form [formGroup]="pointValueForm" (ngSubmit)="onSubmit()" class="space-y-6">
+          <!-- Current Value Display -->
+          <div *ngIf="pointValue" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h4 class="text-sm font-medium text-blue-800">Current Point Value</h4>
+                <p class="text-sm text-blue-700 mt-1">
+                  1 Point = {{ pointValue.pointValue | currency:'USD':'symbol':'1.2-2' }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Point Value Input -->
+          <div>
+            <label for="pointValue" class="block text-sm font-medium text-gray-700 mb-2">
+              New Point Value <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500 sm:text-sm">$</span>
+              </div>
+              <input
+                type="number"
+                id="pointValue"
+                formControlName="pointValue"
+                step="0.01"
+                min="0.01"
+                class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="0.00"
+              />
+            </div>
+            <div *ngIf="getFieldError('pointValue')" class="mt-1 text-sm text-red-600">
+              {{ getFieldError('pointValue') }}
+            </div>
+            <p class="mt-2 text-xs text-gray-500">
+              This determines how much each redeem point is worth in currency
+            </p>
+          </div>
+
+          <!-- Example Calculation -->
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <h4 class="text-sm font-medium text-gray-900 mb-2">Example Calculation</h4>
+            <div class="text-sm text-gray-600 space-y-1">
+              <p>If a customer has <strong>100 points</strong> and point value is <strong>${{ pointValueForm.get('pointValue')?.value || '0.00' }}</strong>:</p>
+              <p class="font-medium text-gray-900">
+                Total discount = 100 × ${{ pointValueForm.get('pointValue')?.value || '0.00' }} = 
+                <span class="text-blue-600">
+                  {{ (100 * (pointValueForm.get('pointValue')?.value || 0)) | currency:'USD':'symbol':'1.2-2' }}
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Error Message -->
+          <div *ngIf="error" class="bg-red-50 border border-red-200 rounded-md p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">Error</h3>
+                <div class="mt-2 text-sm text-red-700">
+                  {{ error }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
+        <button
+          type="button"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-150"
+          (click)="closeModal()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+          (click)="onSubmit()"
+          [disabled]="!isFormValid || loading"
+        >
+          <svg *ngIf="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          {{ submitButtonText }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

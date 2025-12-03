@@ -1,0 +1,265 @@
+// Orders List Component Styles
+
+.orders-container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+// Table responsive improvements
+.orders-table {
+  table-layout: fixed;
+  width: 100%;
+  
+  th, td {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  // Column widths for better space distribution
+  th:nth-child(1), td:nth-child(1) { width: 12%; } // Order
+  th:nth-child(2), td:nth-child(2) { width: 18%; } // Customer
+  th:nth-child(3), td:nth-child(3) { width: 15%; } // Items
+  th:nth-child(4), td:nth-child(4) { width: 12%; } // Status
+  th:nth-child(5), td:nth-child(5) { width: 12%; } // Payment
+  th:nth-child(6), td:nth-child(6) { width: 10%; } // Total
+  th:nth-child(7), td:nth-child(7) { width: 12%; } // Date
+  th:nth-child(8), td:nth-child(8) { width: 9%; }  // Actions
+}
+
+// Filter improvements
+.filter-section {
+  .filter-option {
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      background-color: #f8fafc;
+    }
+  }
+}
+
+// Optimized filter styles
+.optimized-filters {
+  .filter-dropdown {
+    transition: all 0.2s ease-in-out;
+    
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    &:hover {
+      border-color: #9ca3af;
+    }
+  }
+  
+  .search-input {
+    transition: all 0.2s ease-in-out;
+    
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    &:hover {
+      border-color: #9ca3af;
+    }
+  }
+}
+
+// Active filter chips
+.filter-chip {
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .remove-button {
+    transition: all 0.15s ease-in-out;
+    
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
+
+// Responsive filter layout
+@media (max-width: 1024px) {
+  .filter-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .active-filters {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+// Status badges improvements
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  text-transform: capitalize;
+  
+  &.pending {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+  
+  &.confirmed {
+    background-color: #dbeafe;
+    color: #1e40af;
+  }
+  
+  &.processing {
+    background-color: #e9d5ff;
+    color: #6b21a8;
+  }
+  
+  &.shipped {
+    background-color: #e0e7ff;
+    color: #3730a3;
+  }
+  
+  &.delivered {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+  
+  &.cancelled {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+  
+  &.returned {
+    background-color: #f3f4f6;
+    color: #374151;
+  }
+}
+
+// Payment status badges
+.payment-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  text-transform: capitalize;
+  
+  &.pending {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+  
+  &.paid {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+  
+  &.failed {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+  
+  &.refunded {
+    background-color: #f3f4f6;
+    color: #374151;
+  }
+}
+
+// Action button improvements
+.action-button {
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Pagination improvements
+.pagination-container {
+  .pagination-button {
+    transition: all 0.2s ease-in-out;
+    
+    &:hover:not(.active) {
+      background-color: #f8fafc;
+      border-color: #d1d5db;
+    }
+    
+    &.active {
+      background-color: #dbeafe;
+      border-color: #3b82f6;
+      color: #1e40af;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .orders-table {
+    th:nth-child(1), td:nth-child(1) { width: 15%; }
+    th:nth-child(2), td:nth-child(2) { width: 25%; }
+    th:nth-child(3), td:nth-child(3) { width: 20%; }
+    th:nth-child(4), td:nth-child(4) { width: 15%; }
+    th:nth-child(5), td:nth-child(5) { width: 15%; }
+    th:nth-child(6), td:nth-child(6) { width: 10%; }
+    th:nth-child(7), td:nth-child(7) { display: none; }
+    th:nth-child(8), td:nth-child(8) { width: 10%; }
+  }
+}
+
+@media (max-width: 640px) {
+  .orders-table {
+    th:nth-child(3), td:nth-child(3) { display: none; }
+    th:nth-child(5), td:nth-child(5) { display: none; }
+    th:nth-child(6), td:nth-child(6) { width: 15%; }
+    th:nth-child(8), td:nth-child(8) { width: 15%; }
+  }
+}
+
+// Loading and empty states
+.loading-state {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.empty-state {
+  opacity: 0.6;
+  
+  svg {
+    animation: float 3s ease-in-out infinite;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+// Focus improvements for accessibility
+.focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+// Smooth transitions
+* {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}

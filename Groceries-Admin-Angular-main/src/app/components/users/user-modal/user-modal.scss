@@ -1,0 +1,134 @@
+// User Modal Component Styles
+
+// Modal backdrop
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease-in-out;
+}
+
+// Modal panel animations
+.modal-panel {
+  transform: scale(0.95);
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+  
+  &.show {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Form field styling
+.form-field {
+  transition: all 0.2s ease-in-out;
+  
+  input, select {
+    transition: all 0.2s ease-in-out;
+    
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      border-color: #3b82f6;
+    }
+    
+    &:hover:not(:focus) {
+      border-color: #9ca3af;
+    }
+  }
+  
+  &.error {
+    input, select {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+  }
+}
+
+// Error message styling
+.error-message {
+  animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Button styling
+.modal-button {
+  transition: all 0.2s ease-in-out;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Loading spinner
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Checkbox styling
+.checkbox-field {
+  input[type="checkbox"] {
+    transition: all 0.2s ease-in-out;
+    
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+  }
+  
+  label {
+    transition: color 0.2s ease-in-out;
+    
+    &:hover {
+      color: #374151;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 640px) {
+  .modal-panel {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
+  }
+}
+
+// Focus management
+.modal-content {
+  &:focus {
+    outline: none;
+  }
+}
+
+// Smooth transitions for all interactive elements
+* {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}

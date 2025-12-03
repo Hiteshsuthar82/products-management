@@ -1,0 +1,21 @@
+<div class="h-screen flex bg-gray-50">
+  <!-- Sidebar -->
+  <div class="flex-shrink-0 transition-all duration-300" 
+       [class.w-64]="!sidebarCollapsed" 
+       [class.w-20]="sidebarCollapsed">
+    <app-sidebar (sidebarToggle)="onSidebarToggle($event)"></app-sidebar>
+  </div>
+
+  <!-- Main content -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- Header -->
+    <app-header></app-header>
+
+    <!-- Page content -->
+    <main class="flex-1 overflow-y-auto bg-gray-50">
+      <div class="p-6">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+</div>

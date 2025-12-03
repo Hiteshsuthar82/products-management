@@ -1,0 +1,509 @@
+<div class="p-6">
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="flex items-center justify-center h-64">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="errorMessage && !isLoading" class="rounded-md bg-red-50 p-4 mb-6">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-red-800">{{ errorMessage }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard content -->
+  <div *ngIf="dashboardData && !isLoading">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Products Stats -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Total Products</dt>
+                <dd class="text-lg font-medium text-gray-900">{{ dashboardData.stats.products.total }}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-5 py-3">
+          <div class="text-sm">
+            <span class="text-green-600 font-medium">{{ dashboardData.stats.products.active }} active</span>
+            <span class="text-gray-500">, {{ dashboardData.stats.products.outOfStock }} out of stock</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Stats -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Total Users</dt>
+                <dd class="text-lg font-medium text-gray-900">{{ dashboardData.stats.users.total }}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-5 py-3">
+          <div class="text-sm">
+            <span class="text-green-600 font-medium">{{ dashboardData.stats.users.customers }} customers</span>
+            <span class="text-gray-500">, {{ dashboardData.stats.users.active }} active</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders Stats -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Total Orders</dt>
+                <dd class="text-lg font-medium text-gray-900">{{ dashboardData.stats.orders.total }}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-5 py-3">
+          <div class="text-sm">
+            <span class="text-yellow-600 font-medium">{{ dashboardData.stats.orders.pending }} pending</span>
+            <span class="text-gray-500">, {{ dashboardData.stats.orders.completed }} Delivered</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue Stats -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
+                <dd class="text-lg font-medium text-gray-900">{{ formatCurrency(dashboardData.stats.revenue.total) }}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-5 py-3">
+          <div class="text-sm text-gray-500">
+            From Delivered orders
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Enhanced Chart Section -->
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
+  <!-- Analytics Overview - Takes 3 columns -->
+  <div class="lg:col-span-3 bg-gradient-to-br from-white to-gray-50 shadow-lg rounded-xl border border-gray-100 overflow-hidden">
+    <div class="px-6 py-6 sm:p-8">
+      <!-- Header Section with improved styling -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 space-y-4 sm:space-y-0">
+        <div class="flex items-center space-x-3">
+          <!-- Analytics Icon -->
+          <div class="flex-shrink-0">
+            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-xl leading-6 font-bold text-gray-900 mb-1">Analytics Overview</h3>
+            <p class="text-sm text-gray-600">Track your key metrics over time</p>
+          </div>
+        </div>
+        
+        <!-- Enhanced Filter Section -->
+        <div class="flex items-center space-x-3">
+          <div class="flex items-center space-x-2 bg-white rounded-lg border border-gray-200 px-3 py-1 shadow-sm">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z"></path>
+            </svg>
+            <label for="month-filter" class="text-sm font-medium text-gray-700 whitespace-nowrap">Filter by Month:</label>
+            <select
+              id="month-filter"
+              [(ngModel)]="selectedMonth"
+              (change)="onMonthChange()"
+              class="bg-transparent border-none text-sm font-medium text-gray-800 focus:outline-none focus:ring-0 cursor-pointer min-w-[120px]">
+              <option *ngFor="let month of months" [value]="month.value">{{ month.label }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Chart Container with enhanced styling -->
+      <div class="relative">
+        <!-- Chart Area -->
+        <div *ngIf="chartData" class="relative bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
+          <div class="h-96 relative">
+            <canvas id="dashboard-chart" class="w-full h-full"></canvas>
+          </div>
+          
+          <!-- Chart Footer with gradient -->
+          <div class="mt-4 pt-4 border-t border-gray-100">
+            <div class="flex items-center justify-between text-xs text-gray-500">
+              <span>Data updated in real-time</span>
+              <div class="flex items-center space-x-1">
+                <div class="w-1 h-1 bg-green-500 rounded-full animate-pulse"></div>
+                <span>Live</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Enhanced No Data State -->
+        <div *ngIf="!chartData && !isLoading" class="text-center py-16 bg-white rounded-xl border border-gray-100 shadow-sm">
+          <div class="flex flex-col items-center">
+            <!-- Enhanced No Data Icon -->
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+            </div>
+            <h4 class="text-lg font-medium text-gray-900 mb-2">No Chart Data Available</h4>
+            <p class="text-gray-500 max-w-sm">There's no data to display for the selected time period. Try selecting a different month or check back later.</p>
+            
+            <!-- Optional Action Button -->
+            <button class="mt-4 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors duration-200">
+              Refresh Data
+            </button>
+          </div>
+        </div>
+        
+        <!-- Enhanced Loading State -->
+        <div *ngIf="isLoading" class="text-center py-16 bg-white rounded-xl border border-gray-100 shadow-sm">
+          <div class="flex flex-col items-center">
+            <!-- Animated Loading Spinner -->
+            <div class="relative w-12 h-12 mb-4">
+              <div class="absolute top-0 left-0 w-full h-full border-4 border-gray-200 rounded-full"></div>
+              <div class="absolute top-0 left-0 w-full h-full border-4 border-blue-500 rounded-full animate-spin border-t-transparent"></div>
+            </div>
+            <h4 class="text-lg font-medium text-gray-900 mb-2">Loading Analytics</h4>
+            <p class="text-gray-500">Please wait while we fetch your data...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Order Status Pie Chart - Takes 2 columns -->
+<div class="lg:col-span-2 bg-white shadow-lg rounded-xl border border-gray-200">
+  <div class="p-6">
+    <!-- Header Section -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center space-x-3">
+        <div class="flex-shrink-0">
+          <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg leading-6 font-bold text-gray-900 mb-1">Order Status</h3>
+          <p class="text-sm text-gray-600">Current distribution</p>
+        </div>
+      </div>
+      
+   
+    </div>
+
+    <!-- Filter Row - Both dropdowns on same line -->
+    <div class="mb-4 flex items-center space-x-3 relative">
+      <div class="flex-1">
+        <label class="block text-xs font-medium text-gray-700 mb-2">Period</label>
+        <select
+          [(ngModel)]="selectedPeriod"
+          (change)="onStatusFilterChange()"
+          class="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent cursor-pointer">
+          <option *ngFor="let opt of periodOptions" [value]="opt.value">{{ opt.label }}</option>
+        </select>
+      </div>
+      
+      <div class="flex-1">
+        <label class="block text-xs font-medium text-gray-700 mb-2">Status</label>
+        <select
+          [(ngModel)]="selectedStatus"
+          (change)="onStatusFilterChange()"
+          class="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent cursor-pointer">
+          <option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label }}</option>
+        </select>
+      </div>
+
+   <!-- Custom Date Range Picker -->
+   <!-- Date Range Picker Popup (shown automatically when custom is selected) -->
+      <div 
+        *ngIf="showDatePicker" 
+        class="absolute z-50 top-full mt-4 bg-white rounded-lg shadow-xl p-2"
+        style="width: 420px; left: 0; transform: translateX(0); border: 2px solid rgb(29 78 216);">
+      <div class="flex space-x-2">
+        <!-- First Calendar -->
+        <div class="w-40">
+          <div class="flex items-center justify-between mb-1">
+            <button (click)="previousMonth1()" class="p-0.5 hover:bg-gray-100 rounded">
+              <svg class="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+            <h3 class="text-sm font-semibold text-gray-800">{{ getMonthYear(currentMonth1) }}</h3>
+            <button (click)="nextMonth1()" class="p-0.5 hover:bg-gray-100 rounded">
+              <svg class="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="grid grid-cols-7 gap-0.5 text-xs text-gray-600 mb-1">
+            <div class="text-center py-0.5">Su</div>
+            <div class="text-center py-0.5">Mo</div>
+            <div class="text-center py-0.5">Tu</div>
+            <div class="text-center py-0.5">We</div>
+            <div class="text-center py-0.5">Th</div>
+            <div class="text-center py-0.5">Fr</div>
+            <div class="text-center py-0.5">Sa</div>
+          </div>
+          <div class="grid grid-cols-7 gap-0.5">
+            <ng-container *ngFor="let day of calendarDays1; trackBy: trackByDate">
+              <button
+                (click)="selectDate(day, 1)"
+                [class]="getDayClasses(day)"
+                [ngStyle]="getDayStyle(day)"
+                class="h-7 w-7 rounded text-xs hover:bg-blue-100">
+                {{ day.getDate() }}
+              </button>
+            </ng-container>
+          </div>
+        </div>
+        
+        <!-- Second Calendar -->
+        <div class="w-40">
+          <div class="flex items-center justify-between mb-1">
+            <button (click)="previousMonth2()" class="p-0.5 hover:bg-gray-100 rounded">
+              <svg class="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+            <h3 class="text-sm font-semibold text-gray-800">{{ getMonthYear(currentMonth2) }}</h3>
+            <button (click)="nextMonth2()" class="p-0.5 hover:bg-gray-100 rounded">
+              <svg class="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="grid grid-cols-7 gap-0.5 text-xs text-gray-600 mb-1">
+            <div class="text-center py-0.5">Su</div>
+            <div class="text-center py-0.5">Mo</div>
+            <div class="text-center py-0.5">Tu</div>
+            <div class="text-center py-0.5">We</div>
+            <div class="text-center py-0.5">Th</div>
+            <div class="text-center py-0.5">Fr</div>
+            <div class="text-center py-0.5">Sa</div>
+          </div>
+          <div class="grid grid-cols-7 gap-0.5">
+            <ng-container *ngFor="let day of calendarDays2; trackBy: trackByDate">
+              <button
+                (click)="selectDate(day, 2)"
+                [class]="getDayClasses(day)"
+                [ngStyle]="getDayStyle(day)"
+                class="h-7 w-7 rounded text-xs hover:bg-blue-100">
+                {{ day.getDate() }}
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer with buttons -->
+      <div class="mt-3 pt-3 border-t border-gray-200 flex justify-between items-center">
+        <div class="flex space-x-1">
+          <button 
+            (click)="selectToday()"
+            class="px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded">Today</button>
+          <button 
+            (click)="selectYesterday()"
+            class="px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded">Yesterday</button>
+          <button 
+            (click)="selectLast7Days()"
+            class="px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded">Last 7 Days</button>
+        </div>
+        <button 
+          (click)="closeDatePicker()"
+          style="background-color: rgb(29 78 216);"
+          class="px-4 py-1.5 text-white text-xs rounded-lg hover:opacity-90">OK</button>
+      </div>
+    </div>
+  
+    <!-- Clear Button -->
+  <div *ngIf="isDateRangeValid()" class="mt-3">
+    <button
+      (click)="clearCustomFilters()"
+      class="text-xs text-purple-600 hover:text-purple-800 font-medium">
+      Clear Date Range
+    </button>
+  </div>
+</div>
+    
+    <!-- Pie Chart Container -->
+    <div class="relative">
+      <div *ngIf="orderStatusChartData" class="relative">
+        <div class="h-[19rem] relative">
+          <canvas id="order-status-chart" class="w-full h-full"></canvas>
+        </div>
+        
+        <!-- Enhanced Chart Footer with Status Breakdown -->
+        <div class="mt-4 pt-4 border-t border-gray-100">
+          <div class="flex flex-col space-y-2">
+            <!-- Total and Live indicator -->
+            <div class="flex items-center justify-between text-xs text-gray-500">
+              <span class="font-medium">{{ getTotalOrdersWithBreakdown() }}</span>
+              <div class="flex items-center space-x-1">
+                <div class="w-1 h-1 bg-purple-500 rounded-full animate-pulse"></div>
+                <span>Live</span>
+              </div>
+            </div>
+            
+            <!-- Status breakdown -->
+            <div class="text-xs text-gray-600">
+              <span class="font-medium">{{ getStatusBreakdownText() }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- No Data State -->
+      <div *ngIf="!orderStatusChartData && !isLoading" class="text-center py-12">
+        <div class="flex flex-col items-center">
+          <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+            </svg>
+          </div>
+          <h4 class="text-sm font-medium text-gray-900 mb-1">No Data</h4>
+          <p class="text-xs text-gray-500">No orders available</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+
+
+    <!-- Recent Orders and Top Products -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Recent Orders -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Orders</h3>
+          <div class="flow-root">
+            <ul class="-my-5 divide-y divide-gray-200">
+              <li *ngFor="let order of dashboardData.recentOrders" class="py-4">
+                <div class="flex items-center space-x-4">
+                  <div class="flex-shrink-0">
+                    <div class="h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
+                      <span class="text-sm font-medium text-gray-600">#</span>
+                    </div>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">
+                      {{ order.orderNumber }}
+                    </p>
+                    <p class="text-sm text-gray-500 truncate">
+                      {{ order.user.name }} - {{ formatCurrency(order.pricing.totalPrice, order.pricing.currency) }}
+                    </p>
+                  </div>
+                  <div class="flex-shrink-0">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" [ngClass]="getStatusColor(order.orderStatus)">
+                      {{ order.orderStatus }}
+                    </span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Products -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Top Selling Products</h3>
+          <div class="flow-root">
+            <ul class="-my-5 divide-y divide-gray-200">
+              <li *ngFor="let product of dashboardData.topProducts" class="py-4">
+                <div class="flex items-center space-x-4">
+                  <div class="flex-shrink-0">
+                    <img *ngIf="product.images && product.images.length > 0" 
+                         [src]="product.images[0].url" 
+                         [alt]="product.name"
+                         class="h-8 w-8 rounded-full object-cover">
+                    <div *ngIf="!product.images || product.images.length === 0" 
+                         class="h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
+                      <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">
+                      {{ product.name }}
+                    </p>
+                    <p class="text-sm text-gray-500 truncate">
+                      {{ product.sold }} sold - {{ formatCurrency(product.price) }}
+                    </p>
+                  </div>
+                  <div class="flex-shrink-0">
+                    <span class="text-sm font-medium text-gray-900">
+                      #{{ product.sold }}
+                    </span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

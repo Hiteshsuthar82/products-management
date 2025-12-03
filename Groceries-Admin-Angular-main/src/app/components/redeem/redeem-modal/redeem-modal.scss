@@ -1,0 +1,100 @@
+// Redeem Modal Component Styles
+
+// Modal overlay animation
+.modal-overlay {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Modal panel animation
+.modal-panel {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Form input focus states
+input:focus,
+textarea:focus,
+select:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+// Error state styling
+.error-input {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+// Loading button state
+.loading-button {
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// Checkbox styling
+input[type="checkbox"] {
+  accent-color: #3b82f6;
+}
+
+// Responsive design
+@media (max-width: 640px) {
+  .modal-panel {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
+  }
+}
+
+// Accessibility improvements
+.focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+// Smooth transitions
+* {
+  transition: color 0.2s ease-in-out, 
+              background-color 0.2s ease-in-out, 
+              border-color 0.2s ease-in-out,
+              box-shadow 0.2s ease-in-out;
+}

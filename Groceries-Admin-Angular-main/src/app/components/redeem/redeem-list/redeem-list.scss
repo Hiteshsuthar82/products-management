@@ -1,0 +1,201 @@
+// Redeem List Component Styles
+
+.redeem-container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+// Professional table styling
+.redeem-table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  
+  th, td {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    vertical-align: middle;
+    border: none;
+  }
+  
+  // Column widths for better space distribution
+  th:nth-child(1), td:nth-child(1) { width: 35%; } // Rule Details
+  th:nth-child(2), td:nth-child(2) { width: 15%; } // Minimum Order
+  th:nth-child(3), td:nth-child(3) { width: 15%; } // Points Earned
+  th:nth-child(4), td:nth-child(4) { width: 12%; } // Status
+  th:nth-child(5), td:nth-child(5) { width: 13%; } // Created
+  th:nth-child(6), td:nth-child(6) { width: 10%; } // Actions
+}
+
+// Professional row styling
+.professional-row {
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    background-color: #f8fafc;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  &.bg-gray-25 {
+    background-color: #fafbfc;
+  }
+}
+
+// Optimized filter styles
+.optimized-filters {
+  .filter-dropdown {
+    transition: all 0.2s ease-in-out;
+    
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    &:hover {
+      border-color: #9ca3af;
+    }
+  }
+  
+  .search-input {
+    transition: all 0.2s ease-in-out;
+    
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    &:hover {
+      border-color: #9ca3af;
+    }
+  }
+}
+
+// Active filter chips
+.filter-chip {
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .remove-button {
+    transition: all 0.15s ease-in-out;
+    
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
+
+// Professional action button styling
+.action-button {
+  transition: all 0.2s ease-in-out;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+}
+
+// Pagination improvements
+.pagination-container {
+  .pagination-button {
+    transition: all 0.2s ease-in-out;
+    
+    &:hover:not(.active) {
+      background-color: #f8fafc;
+      border-color: #d1d5db;
+    }
+    
+    &.active {
+      background-color: #dbeafe;
+      border-color: #3b82f6;
+      color: #1e40af;
+    }
+  }
+}
+
+// Point value display styling
+.point-value-display {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border: 1px solid #93c5fd;
+  
+  .point-value-amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e40af;
+  }
+}
+
+// Status badges
+.status-badge {
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .redeem-table {
+    th:nth-child(1), td:nth-child(1) { width: 40%; }
+    th:nth-child(2), td:nth-child(2) { width: 20%; }
+    th:nth-child(3), td:nth-child(3) { width: 20%; }
+    th:nth-child(4), td:nth-child(4) { width: 20%; }
+    th:nth-child(5), td:nth-child(5) { display: none; }
+    th:nth-child(6), td:nth-child(6) { width: 20%; }
+  }
+}
+
+@media (max-width: 640px) {
+  .redeem-table {
+    th:nth-child(2), td:nth-child(2) { display: none; }
+    th:nth-child(3), td:nth-child(3) { display: none; }
+    th:nth-child(4), td:nth-child(4) { width: 30%; }
+    th:nth-child(6), td:nth-child(6) { width: 30%; }
+  }
+}
+
+// Loading and empty states
+.loading-state {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.empty-state {
+  opacity: 0.6;
+  
+  svg {
+    animation: float 3s ease-in-out infinite;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+// Focus improvements for accessibility
+.focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+// Smooth transitions
+* {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}

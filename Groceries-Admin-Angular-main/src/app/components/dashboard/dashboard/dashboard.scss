@@ -1,0 +1,67 @@
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  /* Smooth hover effects */
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease-out;
+  }
+  
+  /* Custom focus styles for better accessibility */
+  select:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    transition: box-shadow 0.15s ease-in-out;
+  }
+  
+  /* Subtle gradient background */
+  .bg-gradient-subtle {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  }
+
+  /* Chart legend styling */
+  ::ng-deep canvas ~ div {
+    ul {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      
+      li {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.5rem;
+        background: #f9fafb;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        span {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 500;
+          font-size: 0.875rem;
+          color: #374151;
+        }
+        
+        // Active/hidden state via opacity
+        &.hidden-item {
+          opacity: 0.4;
+          border-color: #d1d5db;
+        }
+      }
+    }
+  }

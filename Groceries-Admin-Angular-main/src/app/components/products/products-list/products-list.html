@@ -1,0 +1,407 @@
+<div class="p-6">
+<!-- Header -->
+<div class="mb-6">
+  <div class="flex items-center justify-between">
+    <!-- Title & Description -->
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Products</h1>
+      <p class="text-gray-600">Manage your product inventory</p>
+    </div>
+
+    <!-- Action Buttons (Right-aligned) -->
+    <div class="flex items-center space-x-3">
+      <!-- Export to Excel Button -->
+      <button
+        (click)="exportToExcel()"
+        [disabled]="isExporting || isLoading"
+        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <svg *ngIf="!isExporting" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <svg *ngIf="isExporting" class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        {{ isExporting ? 'Exporting...' : 'Export to Excel' }}
+      </button>
+
+      <!-- Import from Excel Button -->
+      <button
+        (click)="openImportModal()"
+        [disabled]="isLoading"
+        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+        </svg>
+        Import from Excel
+      </button>
+
+      <!-- Add Product Button -->
+      <button
+        [routerLink]="['/products/add']"
+        class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Add Product
+      </button>
+    </div>
+  </div>
+</div>
+
+  <!-- Filters -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <!-- Search -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+        <input
+          type="text"
+          placeholder="Search products..."
+          class="input-field"
+          (input)="onSearch($any($event.target).value)"
+        />
+      </div>
+
+      <!-- Status Filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+        <select
+          class="input-field"
+          (change)="filters.isActive = $any($event.target).value === '' ? undefined : $any($event.target).value === 'true'; onFilterChange()"
+        >
+          <option value="">All</option>
+          <option value="true">Active</option>
+          <option value="false">Inactive</option>
+        </select>
+      </div>
+
+      <!-- Stock Filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+        <select
+          class="input-field"
+          (change)="filters.isOutOfStock = $any($event.target).value === '' ? undefined : $any($event.target).value === 'true'; onFilterChange()"
+        >
+          <option value="">All</option>
+          <option value="false">In Stock</option>
+          <option value="true">Out of Stock</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="rounded-md bg-red-50 p-4 mb-6">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-red-800">{{ errorMessage }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex items-center justify-center h-64">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+  </div>
+
+  <!-- Products Table -->
+  <div *ngIf="!isLoading && products.length > 0" class="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let product of products" [class]="product.isDeleted ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-gray-50'">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <img
+                    *ngIf="product.images && product.images.length > 0"
+                    [src]="product.images[0].url"
+                    [alt]="product.name"
+                    class="h-10 w-10 rounded-lg object-cover"
+                  />
+                  <div
+                    *ngIf="!product.images || product.images.length === 0"
+                    class="h-10 w-10 bg-gray-200 rounded-lg flex items-center justify-center"
+                  >
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900">{{ product.name }}</div>
+                  <div class="text-sm text-gray-500">{{ product.brand || 'No brand' }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">{{ product.category.name || 'No category' }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">{{ formatCurrency(product.price) }}</div>
+              <div *ngIf="product.originalPrice && product.originalPrice > product.price" class="text-sm text-gray-500 line-through">
+                {{ formatCurrency(product.originalPrice) }}
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">{{ product.stock }}</div>
+              <div class="text-sm text-gray-500">Sold: {{ product.sold }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <!-- Show deleted badge if deleted -->
+              <span 
+                *ngIf="product.isDeleted"
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
+                title="This product has been deleted"
+              >
+                Deleted
+              </span>
+              <!-- Show normal status if not deleted -->
+              <span 
+                *ngIf="!product.isDeleted"
+                (click)="toggleProductStatus(product)"
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity" 
+                [ngClass]="getStatusBadgeClass(product.isActive, product.isOutOfStock)"
+                [title]="product.isActive ? 'Click to deactivate' : 'Click to activate'"
+              >
+                {{ getStatusText(product.isActive, product.isOutOfStock) }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="flex space-x-2">
+                <button
+                  [routerLink]="['/products/edit', product._id]"
+                  [disabled]="product.isDeleted"
+                  class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Edit product"
+                >
+                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit
+                </button>
+                <button
+                  (click)="deleteProduct(product._id)"
+                  [disabled]="product.isDeleted || deletingProductId === product._id"
+                  class="inline-flex items-center px-3 py-1.5 border border-red-300 rounded-md text-xs font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Delete product"
+                >
+                  <svg *ngIf="deletingProductId !== product._id" class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  <svg *ngIf="deletingProductId === product._id" class="w-3 h-3 mr-1 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {{ deletingProductId === product._id ? 'Deleting...' : 'Delete' }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="!isLoading && totalItems > 0"
+      class="bg-white px-6 py-4 flex items-center justify-between border-t border-gray-200 mt-6 rounded-lg shadow-sm">
+      <div class="flex items-center space-x-6">
+        <div class="text-sm text-gray-700">
+          Showing <span class="font-semibold">{{ (currentPage - 1) * pageSize + 1 }}</span> to
+          <span class="font-semibold">{{ Math.min(currentPage * pageSize, totalItems) }}</span> of
+          <span class="font-semibold">{{ totalItems }}</span> results
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="text-sm text-gray-700">Show:</span>
+          <select
+            class="pl-3 pr-7 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            [value]="pageSize"
+            (change)="pageSize = +$any($event.target).value; filters.limit = pageSize; onFilterChange()"
+          >
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button *ngIf="currentPage > 1"
+          class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          (click)="onPageChange(currentPage - 1)">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Previous
+        </button>
+
+        <div class="flex items-center space-x-1">
+          <button *ngFor="let page of [].constructor(totalPages); let i = index"
+            [class]="(i + 1) === currentPage 
+                  ? 'inline-flex items-center px-3 py-2 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600 rounded-md active'
+                  : 'inline-flex items-center px-3 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md'"
+            (click)="onPageChange(i + 1)">
+            {{ i + 1 }}
+          </button>
+        </div>
+
+        <button *ngIf="currentPage < totalPages"
+          class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          (click)="onPageChange(currentPage + 1)">
+          Next
+          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && products.length === 0" class="text-center py-12">
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+    </svg>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">No products</h3>
+    <p class="mt-1 text-sm text-gray-500">Get started by creating a new product.</p>
+    <div class="mt-6">
+      
+      <button
+        [routerLink]="['/products/add']"
+        class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Add Product
+      </button>
+    </div>
+  </div>
+
+  <!-- Import Modal -->
+  <div *ngIf="showImportModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center" (click)="closeImportModal()">
+    <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium text-gray-900">Import Products from Excel</h3>
+        <button (click)="closeImportModal()" class="text-gray-400 hover:text-gray-500">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="space-y-4">
+        <!-- Sample File Download -->
+        <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div class="flex items-start">
+            <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-blue-900">Need a sample file?</p>
+              <p class="text-sm text-blue-700 mt-1">Download the Excel template to see the correct format.</p>
+              <button
+                (click)="downloadSampleFile()"
+                class="mt-2 inline-flex items-center px-3 py-1.5 border border-blue-300 rounded-md text-sm font-medium text-blue-700 bg-white hover:bg-blue-50"
+              >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+                Download Sample File
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- File Upload -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Select Excel File</label>
+          <input
+            type="file"
+            id="fileInput"
+            accept=".xlsx,.xls"
+            (change)="onFileSelected($event)"
+            class="block w-full text-sm text-gray-500
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-lg file:border-0
+              file:text-sm file:font-semibold
+              file:bg-blue-50 file:text-blue-700
+              hover:file:bg-blue-100
+              file:cursor-pointer"
+          />
+          <p class="mt-2 text-xs text-gray-500">
+            Supported formats: .xlsx, .xls. Make sure your file has the correct column headers.
+          </p>
+        </div>
+        
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="p-3 bg-red-50 border border-red-200 rounded-md">
+          <p class="text-sm text-red-600">{{ errorMessage }}</p>
+        </div>
+        
+        <!-- Import Results -->
+        <div *ngIf="importResults" class="p-4 bg-green-50 border border-green-200 rounded-md">
+          <p class="text-sm font-medium text-green-800 mb-2">Import completed!</p>
+          <div class="space-y-1 text-sm text-green-700">
+            <p><span class="font-semibold">{{ importResults.imported }}</span> products imported successfully</p>
+            <p *ngIf="importResults.failed > 0" class="text-orange-700">
+              <span class="font-semibold">{{ importResults.failed }}</span> products failed to import
+            </p>
+          </div>
+          <button
+            (click)="closeImportModal()"
+            class="mt-3 w-full px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
+          >
+            Done
+          </button>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div *ngIf="!importResults" class="flex items-center justify-end space-x-3 pt-4">
+          <button
+            (click)="closeImportModal()"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            (click)="importFromExcel()"
+            [disabled]="!selectedFile || isImporting"
+            class="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span *ngIf="!isImporting">Import Products</span>
+            <span *ngIf="isImporting" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Importing...
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
