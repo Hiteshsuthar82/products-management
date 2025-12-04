@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/auth.store';
 import { useToast } from '@/components/ui/use-toast';
+import { FullPageLoader } from '@/components/common/FullPageLoader';
 
 export default function OrderDetailPage() {
   const { id } = useParams();
@@ -46,11 +47,7 @@ export default function OrderDetailPage() {
   };
 
   if (loading) {
-    return (
-      <div className="container-mobile py-8">
-        <div className="text-center">Loading...</div>
-      </div>
-    );
+    return <FullPageLoader message="Loading order details..." />;
   }
 
   if (!order) {

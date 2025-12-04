@@ -9,6 +9,7 @@ import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
 import { useToast } from '@/components/ui/use-toast';
 import { useCartStore } from '@/store/cart.store';
+import { FullPageLoader } from '@/components/common/FullPageLoader';
 
 export default function CartPage() {
   const navigate = useNavigate();
@@ -71,11 +72,7 @@ export default function CartPage() {
   };
 
   if (loading) {
-    return (
-      <div className="container-mobile py-8">
-        <div className="text-center">Loading...</div>
-      </div>
-    );
+    return <FullPageLoader message="Loading cart..." />;
   }
 
   if (!cart || cart.items.length === 0) {

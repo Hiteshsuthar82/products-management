@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/auth.store';
 import { useToast } from '@/components/ui/use-toast';
 import { Plus, Trash2 } from 'lucide-react';
+import { FullPageLoader } from '@/components/common/FullPageLoader';
 
 export default function AddressesPage() {
   const navigate = useNavigate();
@@ -59,11 +60,7 @@ export default function AddressesPage() {
   };
 
   if (loading) {
-    return (
-      <div className="container-mobile py-8">
-        <div className="text-center">Loading...</div>
-      </div>
-    );
+    return <FullPageLoader message="Loading addresses..." />;
   }
 
   return (

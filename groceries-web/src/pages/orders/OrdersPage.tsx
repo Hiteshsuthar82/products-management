@@ -6,6 +6,7 @@ import { Order } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuthStore } from '@/store/auth.store';
 import { useToast } from '@/components/ui/use-toast';
+import { FullPageLoader } from '@/components/common/FullPageLoader';
 
 export default function OrdersPage() {
   const navigate = useNavigate();
@@ -46,11 +47,7 @@ export default function OrdersPage() {
   };
 
   if (loading) {
-    return (
-      <div className="container-mobile py-8">
-        <div className="text-center">Loading...</div>
-      </div>
-    );
+    return <FullPageLoader message="Loading your orders..." />;
   }
 
   if (orders.length === 0) {

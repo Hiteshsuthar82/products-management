@@ -9,6 +9,7 @@ import { ShoppingCart, Heart } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
 import { useToast } from '@/components/ui/use-toast';
 import { useCartStore } from '@/store/cart.store';
+import { FullPageLoader } from '@/components/common/FullPageLoader';
 
 export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -87,11 +88,7 @@ export default function HomePage() {
   };
 
   if (loading) {
-    return (
-      <div className="container-mobile py-8">
-        <div className="text-center">Loading...</div>
-      </div>
-    );
+    return <FullPageLoader message="Loading store..." />;
   }
 
   return (
