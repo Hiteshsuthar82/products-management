@@ -73,14 +73,29 @@ A comprehensive Node.js backend application for an ecommerce platform with Mongo
    ```
 
 3. **Environment Setup**
-   - Copy `config.env` and update with your values:
+   - The `config.env` file has been created with default values. Update it with your actual values:
      ```env
-     PORT=5000
-     MONGODB_URI=mongodb://localhost:27017/ecommerce
-     JWT_SECRET=your_jwt_secret_key_here
-     JWT_EXPIRE=7d
+     # Server Configuration
      NODE_ENV=development
+     PORT=5000
+     
+     # MongoDB Configuration
+     MONGODB_URI=mongodb://localhost:27017/groceries_db
+     # For MongoDB Atlas (Cloud):
+     # MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/groceries_db?retryWrites=true&w=majority
+     
+     # JWT Configuration
+     JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
+     JWT_EXPIRE=7d
+     
+     # OTP Configuration
+     MASTER_BY_PASS_OTP=0000
      ```
+   
+   **Important:** 
+   - Change `JWT_SECRET` to a strong, random string in production
+   - Update `MONGODB_URI` with your MongoDB connection string
+   - The `MASTER_BY_PASS_OTP` is used for testing OTP verification (default: 0000)
 
 4. **Start MongoDB**
    ```bash

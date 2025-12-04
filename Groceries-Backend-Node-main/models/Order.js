@@ -160,14 +160,13 @@ const orderSchema = new mongoose.Schema({
 });
 
 // Generate order number
-orderSchema.pre('save', function(next) {
+orderSchema.pre('save', async function() {
   if (!this.orderNumber) {
     const timestamp = Date.now().toString();
     const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
     this.orderNumber = `ORD${timestamp}${random}`;
   }
   this.updatedAt = Date.now();
-  next();
 });
 
 // Update order status

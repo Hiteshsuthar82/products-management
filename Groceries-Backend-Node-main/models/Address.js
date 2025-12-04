@@ -70,20 +70,18 @@ const addressSchema = new mongoose.Schema({
 });
 
 // Update timestamp before saving
-addressSchema.pre('save', function(next) {
+addressSchema.pre('save', async function() {
   this.updatedAt = Date.now();
-  next();
 });
 
 // Ensure only one default address per user
-addressSchema.pre('save', async function(next) {
+addressSchema.pre('save', async function() {
   if (this.isDefault && this.isModified('isDefault')) {
     await this.constructor.updateMany(
       { user: this.user, _id: { $ne: this._id } },
       { isDefault: false }
     );
   }
-  next();
 });
 
 // Set as default address

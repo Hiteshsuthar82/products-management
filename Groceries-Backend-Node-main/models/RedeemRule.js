@@ -38,9 +38,8 @@ const redeemRuleSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-redeemRuleSchema.pre('save', function(next) {
+redeemRuleSchema.pre('save', async function() {
   this.updatedAt = Date.now();
-  next();
 });
 
 module.exports = mongoose.model('RedeemRule', redeemRuleSchema);

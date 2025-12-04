@@ -55,20 +55,18 @@ const currencySchema = new mongoose.Schema({
 });
 
 // Update timestamp before saving
-currencySchema.pre('save', function(next) {
+currencySchema.pre('save', async function() {
   this.updatedAt = Date.now();
-  next();
 });
 
 // Ensure only one default currency
-currencySchema.pre('save', async function(next) {
+currencySchema.pre('save', async function() {
   if (this.isDefault && this.isModified('isDefault')) {
     await this.constructor.updateMany(
       { _id: { $ne: this._id } },
       { isDefault: false }
     );
   }
-  next();
 });
 
 // Format amount with currency symbol

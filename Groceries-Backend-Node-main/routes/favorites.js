@@ -8,9 +8,9 @@ const { sendSuccess, sendError, sendValidationError, sendServerError } = require
 const router = express.Router();
 
 // @desc    Get user's favorites
-// @route   GET /api/favorites
+// @route   POST /api/favorites
 // @access  Private (Customer only)
-router.get('/', protect, customerOnly, async (req, res) => {
+router.post('/', protect, customerOnly, async (req, res) => {
   try {
     const user = await User.findById(req.user.id)
       .populate({
@@ -235,9 +235,9 @@ router.post('/clear', protect, customerOnly, async (req, res) => {
 });
 
 // @desc    Get favorites count
-// @route   GET /api/favorites/count
+// @route   POST /api/favorites/count
 // @access  Private (Customer only)
-router.get('/count', protect, customerOnly, async (req, res) => {
+router.post('/count', protect, customerOnly, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user) {

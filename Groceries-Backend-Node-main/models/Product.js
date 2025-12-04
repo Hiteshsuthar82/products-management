@@ -128,10 +128,9 @@ const productSchema = new mongoose.Schema({
 });
 
 // Update isOutOfStock based on stock
-productSchema.pre('save', function(next) {
+productSchema.pre('save', async function() {
   this.isOutOfStock = this.stock <= 0;
   this.updatedAt = Date.now();
-  next();
 });
 
 // Calculate average rating

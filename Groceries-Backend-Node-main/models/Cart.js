@@ -54,11 +54,15 @@ const cartSchema = new mongoose.Schema({
 });
 
 // Calculate totals before saving
-cartSchema.pre('save', function(next) {
-  this.totalItems = this.items.reduce((total, item) => total + item.quantity, 0);
-  this.totalAmount = this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+cartSchema.pre('save', async function() {
+  // Ensure items is an array
+  if (!Array.isArray(this.items)) {
+    this.items = [];
+  }
+  
+  this.totalItems = this.items.reduce((total, item) => total + (item.quantity || 0), 0);
+  this.totalAmount = this.items.reduce((total, item) => total + ((item.price || 0) * (item.quantity || 0)), 0);
   this.updatedAt = Date.now();
-  next();
 });
 
 // Add item to cart

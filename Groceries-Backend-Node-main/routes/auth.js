@@ -14,7 +14,7 @@ router.post('/register', [
   body('name').trim().isLength({ min: 2, max: 50 }).withMessage('Name must be between 2 and 50 characters'),
   body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-  body('phone').matches(/^[0-9]{10}$/).withMessage('Please provide a valid 10-digit phone number')
+  body('phone').matches(/^(\+[1-9]\d{1,14}|[0-9]{10})$/).withMessage('Please provide a valid phone number (10 digits or with country code)')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -23,6 +23,12 @@ router.post('/register', [
     }
 
     const { name, email, password, phone } = req.body;
+    
+    // Convert 10-digit phone to country code format if needed
+    let phoneNumber = phone;
+    if (/^[0-9]{10}$/.test(phoneNumber)) {
+      phoneNumber = `+91${phoneNumber}`;
+    }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -35,7 +41,7 @@ router.post('/register', [
       name,
       email,
       password,
-      phone,
+      phone: phoneNumber,
       role: 'customer'
     });
 
@@ -145,7 +151,7 @@ router.post('/me', protect, async (req, res) => {
 // @access  Private
 router.post('/profile', protect, [
   body('name').optional().trim(),
-  body('phone').optional().matches(/^[0-9]{10}$/).withMessage('Please provide a valid 10-digit phone number')
+  body('phone').optional().matches(/^(\+[1-9]\d{1,14}|[0-9]{10})$/).withMessage('Please provide a valid phone number (10 digits or with country code)')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -157,6 +163,11 @@ router.post('/profile', protect, [
       name: req.body.name,
       phone: req.body.phone
     };
+
+    // Convert 10-digit phone to country code format if needed
+    if (fieldsToUpdate.phone && /^[0-9]{10}$/.test(fieldsToUpdate.phone)) {
+      fieldsToUpdate.phone = `+91${fieldsToUpdate.phone}`;
+    }
 
     // Remove undefined fields
     Object.keys(fieldsToUpdate).forEach(key =>

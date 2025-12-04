@@ -76,9 +76,8 @@ const countrySchema = new mongoose.Schema({
 });
 
 // Update timestamp before saving
-countrySchema.pre('save', function(next) {
+countrySchema.pre('save', async function() {
   this.updatedAt = Date.now();
-  next();
 });
 
 module.exports = mongoose.model('Country', countrySchema);
